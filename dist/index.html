@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ShoutBoard - Trada Academy</title>
+</head>
+
+<body>
+    <div id="wrapper">
+        <h3>Trada Academy Shout Board</h3>
+
+        <form id="shoutForm">
+            <input id="shoutText" type="text" autofocus required placeholder="let's shout!">
+            <button type="submit" id="shoutBtn">&nbsp;&nbsp;Shout&nbsp;&nbsp;</button>
+        </form>
+        <br><br>
+        <section class="board"></section>
+    </div>
+
+    <script id="shoutTemplate" type="text/template">
+        <div class="card">
+            <div class="meta">
+                <span class="who">${whoShort}</span> - <span class="ago">${ago}</span>
+            </div>
+            <div class="what">${what}</div>
+        </div>
+    </script>
+    <script src='app.bundle.js'></script>
+</body>
+
+</html>

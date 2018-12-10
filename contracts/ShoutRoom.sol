@@ -1,4 +1,4 @@
-pragma solidity >=0.4.25;
+pragma solidity >=0.4.24;
 
 interface IUserList {
   function isAddrRegistered(address _who) external view returns(bool);
@@ -23,7 +23,7 @@ contract ShoutRoom {
   }
 
   function shout(string memory what) public {
-    require(userList.isAddrRegistered(msg.sender));
+    //require(userList.isAddrRegistered(msg.sender));
     shoutBoard.push(ShoutMsg(msg.sender, what));
     emit Shout(msg.sender, what);
   }
