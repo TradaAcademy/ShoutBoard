@@ -120,7 +120,9 @@ function wireEvents() {
         }
 
         app.instances.shoutBoard.shout(text, {
-            from: web3.eth.accounts[0]
+            from: web3.eth.accounts[0],
+            gas: 100000, // gas limit
+            gasPrice: '15000000000' // 15 gwei
         })
 
     }, false)

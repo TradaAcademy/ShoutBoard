@@ -3,10 +3,10 @@ var ShoutRoom = artifacts.require("./ShoutRoom.sol");
 
 module.exports = async (deployer, network) => {
   if (network === "mainnet") return;
-
-  deployer.then(async () => {
-    await deployer.deploy(UserList);
-    await deployer.deploy(ShoutRoom, UserList.address);
+  deployer.deploy(UserList).then(function() {
+    return deployer.deploy(ShoutRoom, UserList.address).catch(function(err) {
+      console.log("ShoutRoom ERR: ", err)
+    });
   });
 };
 
