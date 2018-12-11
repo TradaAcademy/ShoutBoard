@@ -18,12 +18,16 @@ contract ShoutRoom {
 
   event Shout(address indexed who, string what);
 
+  constructor(IUserList _userList) public {
+    userList = _userList;
+  }
+
   function setUserList(IUserList _userList) public {
       userList = _userList;
   }
 
   function shout(string memory what) public {
-    //require(userList.isAddrRegistered(msg.sender));
+    require(userList.isAddrRegistered(msg.sender));
     shoutBoard.push(ShoutMsg(msg.sender, what));
     emit Shout(msg.sender, what);
   }
