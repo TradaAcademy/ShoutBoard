@@ -3,6 +3,7 @@ import async from 'async';
 import moment from 'moment';
 import 'truffle-contract';
 import shoutRoomJSON from '../build/contracts/ShoutRoom.json';
+import userListJSON from '../build/contracts/UserList.json';
 import './style.css';
 
 var app = {
@@ -19,11 +20,12 @@ var app = {
 
 function init() {
 
-    // Init contract
+    // Init contracts
 
-    var shoutContract = TruffleContract(shoutRoomJSON);
     var provider = (typeof web3 !== 'undefined') ? web3.currentProvider
         : new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
+
+    var shoutContract = TruffleContract(shoutRoomJSON);
     shoutContract.setProvider(provider);
     shoutContract.deployed().then(function(instance) {
         // save for later use
@@ -31,6 +33,13 @@ function init() {
 
         // load recent chat messages
         loadOldShouts(instance);
+    });
+
+    var userContract = TruffleContract(userListJSON);
+    userContract.setProvider(provider);
+    userContract.deployed().then(function(instance) {
+        // save for later use
+        app.instances.userList = instance;
     });
 
     // Load templates
@@ -119,11 +128,25 @@ function wireEvents() {
             return;
         }
 
-        app.instances.shoutBoard.shout(text, {
-            from: web3.eth.accounts[0],
-            gas: 100000, // gas limit
-            gasPrice: '15000000000' // 15 gwei
-        })
+        var account = web3.eth.accounts[0];
+        if (!account) {
+            alert("Please sign-in MetaMask.");
+            return;
+        }
+        app.instances.userList.isAddrRegistered(account).then(function(registered){
+            if (!registered) {
+                window.location.href = "/register.html";
+                return;
+            } else {
+                app.instances.shoutBoard.shout(text, {
+                    from: account,
+                    gas: 100000, // gas limit
+                    gasPrice: '15000000000' // 15 gwei
+                }).catch(function(err){
+                    alert(err);
+                })
+            }
+        });
 
     }, false)
 }

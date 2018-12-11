@@ -36,9 +36,6 @@ contract UserList {
         return (user.nick, user.isMale);
     }
 
-    function getMe() public view returns(bytes32 nick, bool isMale) {
-        return getUserByAddr(msg.sender);
-    }
 
     function updateMe(bool _isMale) public {
         require(isAddrRegistered(msg.sender));
