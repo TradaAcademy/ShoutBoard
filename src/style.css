@@ -2,27 +2,42 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #wrapper {
+    display: block;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
     padding: 1rem;
 }
 #shoutText {
-    width: calc(100% - 100px);
+    width: calc(100% - 120px);
     max-width: 360px;
 }
 .board {
-
+    background-color: #f8f8f8;
 }
 
 .card {
-    box-shadow: 0 1px 1px 0 rgba(0,0,0,0.7);
-    margin: 1rem 0;
-    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+    margin: 0;
+    padding: 0.5rem 1rem;
     line-height: 1.6;
 }
 .meta {
-    font-size: 90%;
+    font-size: 85%;
     color: #828282;
 }
+.who {
+    font-weight: 600;
+    color: #333;
+}
+.ago {
+}
+.ago::before {
+    content: "\00b7";
+    padding: 0 0.3rem;
+}
+#shoutText, #shoutBtn {
+    padding: 8px 12px;
+}
+
   

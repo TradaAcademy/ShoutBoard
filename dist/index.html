@@ -4,24 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <title>ShoutBoard - Trada Academy</title>
+    <style>
+        body {background-color: #e6ecf0}
+        #wrapper { display: none }
+    </style>
 </head>
 
 <body>
     <div id="wrapper">
         <h3>Trada Academy Shout Board</h3>
-
+        <br>
         <form id="shoutForm">
-            <input id="shoutText" type="text" autofocus required placeholder="let's shout!">
+            <input id="shoutText" type="text" autofocus required placeholder="What to shout today?">
             <button type="submit" id="shoutBtn">&nbsp;&nbsp;Shout&nbsp;&nbsp;</button>
         </form>
-        <br><br>
+        <br>
         <section class="board"></section>
     </div>
 
     <script id="shoutTemplate" type="text/template">
         <div class="card">
             <div class="meta">
-                <span class="who">${whoShort}</span> - <span class="ago">${ago}</span>
+                <span class="who">${whoShort}</span> <span class="ago">${ago}</span>
             </div>
             <div class="what">${what}</div>
         </div>
