@@ -14,7 +14,7 @@ var app = {
     },
     cache: {
         blockTime: {},
-        avatar: {}
+        usernames: {}
     }
 }
 
@@ -65,21 +65,51 @@ function formatAddr(addr) {
 }
 
 function processShout(item, callback) {
-    var theItem = {
-        when: app.cache.blockTime[item.blockNumber],
-        who: item.args.who,
-        whoShort: formatAddr(item.args.who),
-        what: item.args.what
-    };
-    if (theItem.when) {
-        return callback(null, theItem);
+    async.parallel({
+        when: function(next) {
+            getTimestamp(item, next);
+        },
+        username: function(next) {
+            getUsername(item, next);
+        }
+    }, function(err, data){
+        if (err) {
+            return callback(err, null);
+        }
+        var theItem = {
+            when: data.when,
+            ago: data.when.fromNow(),
+            who: item.args.who,
+            username: data.username || formatAddr(item.args.who),
+            what: item.args.what
+        };
+        callback(null, theItem);
+    })
+}
+
+function getTimestamp(item, callback) {
+    var cache = app.cache.blockTime[item.blockNumber];
+    if (cache) {
+        return callback(null, cache);
     }
     web3.eth.getBlock(item.blockNumber, function (err, block) {
-        theItem.when = moment.unix(block.timestamp);
-        theItem.ago = theItem.when.fromNow();
-        app.cache.blockTime[item.blockNumber] = theItem.when;
-        callback(err, theItem);
+        var timestamp = moment.unix(block.timestamp);
+        app.cache.blockTime[item.blockNumber] = timestamp;
+        callback(err, timestamp);
     });
+}
+
+function getUsername(item, callback) {
+    var cache = app.cache.usernames[item.args.who];
+    if (cache) {
+        return callback(null, cache);
+    }
+    app.instances.userList.getUserByAddr(item.args.who).then(function(value) {
+        callback(null, web3.toAscii(value[0]));
+    }).catch(function(err) {
+        console.log(err);
+        callback(err, null);
+    })
 }
 
 function loadOldShouts(instance) {

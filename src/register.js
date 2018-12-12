@@ -47,7 +47,7 @@ function wireEvents() {
         }
         app.instances.userList.isAddrRegistered(account).then(function(registered){
             if (!registered) {
-                app.instances.userList.register(text, false, {
+                app.instances.userList.register(web3.fromAscii(text), false, {
                     from: account,
                     gas: 100000, // gas limit
                     gasPrice: '15000000000' // 15 gwei
@@ -56,6 +56,8 @@ function wireEvents() {
                 }).catch(function(err){
                     alert(err);
                 })
+            } else {
+                alert("You already registed before. Update user name is not supported!");
             }
         });
 

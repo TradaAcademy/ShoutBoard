@@ -44,7 +44,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity >=0.4.24;\n\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\n\ninterface IUserList {\n    function isAddrRegistered(address _who) external view returns(bool);\n    function isNickRegistered(bytes32 _nick) external view returns(bool);\n}\n\ncontract ShoutRoom is Ownable {\n    struct ShoutMsg {\n        address who;\n        string what;\n    }\n\n    ShoutMsg[] public shoutBoard;\n    IUserList public userList;\n    \n    mapping(uint => address[]) public likers;\n\n    event Shout(address indexed who, string what);\n\n    constructor(IUserList _userList) public {\n        userList = _userList;\n    }\n\n    function setUserList(IUserList _userList) public onlyOwner {\n        userList = _userList;\n    }\n\n    function shout(string memory what) public {\n        require(bytes(what).length != 0, \"Content cannot be blank\");\n        require(address(userList) != address(0), \"UserList not set\");\n        require(userList.isAddrRegistered(msg.sender), \"User not registered\");\n        shoutBoard.push(ShoutMsg(msg.sender, what));\n        emit Shout(msg.sender, what);\n    }\n\n    function count() public view returns(uint){\n        return shoutBoard.length;\n    }\n\n    function getShouts() public view returns(address[] memory whoList, string memory content) {\n        uint len = shoutBoard.length;\n        bytes memory contentCollector;\n        whoList = new address[](len);\n        for (uint i = 0; i < len; i++) {\n            whoList[i] = shoutBoard[i].who;\n            contentCollector = abi.encodePacked(contentCollector, shoutBoard[i].what, byte(0));\n        }\n\n\n        content = string(contentCollector);\n    }\n\n}\n",
+  "source": "pragma solidity >=0.4.24;\n\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\n\ninterface IUserList {\n    function isAddrRegistered(address _who) external view returns(bool);\n    function isNickRegistered(bytes32 _nick) external view returns(bool);\n}\n\ncontract ShoutRoom is Ownable {\n    struct ShoutMsg {\n        address who;\n        string what;\n    }\n\n    ShoutMsg[] public shoutBoard;\n    IUserList public userList;\n    \n    mapping(uint => address[]) public likers;\n\n    event Shout(address indexed who, string what);\n\n    constructor(IUserList _userList) public {\n        userList = _userList;\n    }\n\n    function setUserList(IUserList _userList) public onlyOwner {\n        userList = _userList;\n    }\n\n    function shout(string memory what) public {\n        require(bytes(what).length != 0, \"Content cannot be blank\");\n        require(address(userList) != address(0), \"UserList not set\");\n        require(userList.isAddrRegistered(msg.sender), \"User not registered\");\n        shoutBoard.push(ShoutMsg(msg.sender, what));\n        emit Shout(msg.sender, what);\n    }\n\n    function count() public view returns(uint){\n        return shoutBoard.length;\n    }\n\n    function getShouts() public view returns(address[] memory whoList, string memory content) {\n        uint len = shoutBoard.length;\n        bytes memory contentCollector;\n        whoList = new address[](len);\n        for (uint i = 0; i < len; i++) {\n            whoList[i] = shoutBoard[i].who;\n            contentCollector = abi.encodePacked(contentCollector, shoutBoard[i].what, byte(0));\n        }\n\n        content = string(contentCollector);\n    }\n\n}\n",
   "sourcePath": "/Users/thi/Documents/GitHub/ShoutBoard/contracts/ShoutRoom.sol",
   "ast": {
     "absolutePath": "/Users/thi/Documents/GitHub/ShoutBoard/contracts/ShoutRoom.sol",
@@ -76,7 +76,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 191,
-        "sourceUnit": 473,
+        "sourceUnit": 460,
         "src": "27:63:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -273,10 +273,10 @@
               "id": 18,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 472,
+              "referencedDeclaration": 459,
               "src": "286:7:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$472",
+                "typeIdentifier": "t_contract$_Ownable_$459",
                 "typeString": "contract Ownable"
               }
             },
@@ -286,7 +286,7 @@
           }
         ],
         "contractDependencies": [
-          472
+          459
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -294,7 +294,7 @@
         "id": 190,
         "linearizedBaseContracts": [
           190,
-          472
+          459
         ],
         "name": "ShoutRoom",
         "nodeType": "ContractDefinition",
@@ -731,7 +731,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 406,
+                  "referencedDeclaration": 393,
                   "src": "672:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -940,10 +940,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        490,
-                        491
+                        477,
+                        478
                       ],
-                      "referencedDeclaration": 491,
+                      "referencedDeclaration": 478,
                       "src": "777:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1132,10 +1132,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        490,
-                        491
+                        477,
+                        478
                       ],
-                      "referencedDeclaration": 491,
+                      "referencedDeclaration": 478,
                       "src": "846:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1175,7 +1175,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 487,
+                              "referencedDeclaration": 474,
                               "src": "950:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1279,10 +1279,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        490,
-                        491
+                        477,
+                        478
                       ],
-                      "referencedDeclaration": 491,
+                      "referencedDeclaration": 478,
                       "src": "916:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1322,7 +1322,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 487,
+                              "referencedDeclaration": 474,
                               "src": "1020:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1458,7 +1458,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 487,
+                          "referencedDeclaration": 474,
                           "src": "1059:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -1690,7 +1690,7 @@
             "body": {
               "id": 188,
               "nodeType": "Block",
-              "src": "1268:359:0",
+              "src": "1268:358:0",
               "statements": [
                 {
                   "assignments": [
@@ -2190,7 +2190,7 @@
                                 "name": "abi",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 474,
+                                "referencedDeclaration": 461,
                                 "src": "1501:3:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_abi",
@@ -2389,7 +2389,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 129,
-                      "src": "1586:7:0",
+                      "src": "1585:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
                         "typeString": "string memory"
@@ -2407,7 +2407,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 137,
-                          "src": "1603:16:0",
+                          "src": "1602:16:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes_memory_ptr",
                             "typeString": "bytes memory"
@@ -2427,7 +2427,7 @@
                         "isPure": true,
                         "lValueRequested": false,
                         "nodeType": "ElementaryTypeNameExpression",
-                        "src": "1596:6:0",
+                        "src": "1595:6:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_type$_t_string_storage_ptr_$",
                           "typeString": "type(string storage pointer)"
@@ -2442,13 +2442,13 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "1596:24:0",
+                      "src": "1595:24:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory",
                         "typeString": "string memory"
                       }
                     },
-                    "src": "1586:34:0",
+                    "src": "1585:34:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
                       "typeString": "string memory"
@@ -2456,7 +2456,7 @@
                   },
                   "id": 187,
                   "nodeType": "ExpressionStatement",
-                  "src": "1586:34:0"
+                  "src": "1585:34:0"
                 }
               ]
             },
@@ -2545,17 +2545,17 @@
               "src": "1218:49:0"
             },
             "scope": 190,
-            "src": "1178:449:0",
+            "src": "1178:448:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
         "scope": 191,
-        "src": "264:1366:0"
+        "src": "264:1365:0"
       }
     ],
-    "src": "0:1631:0"
+    "src": "0:1630:0"
   },
   "legacyAST": {
     "absolutePath": "/Users/thi/Documents/GitHub/ShoutBoard/contracts/ShoutRoom.sol",
@@ -2587,7 +2587,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 191,
-        "sourceUnit": 473,
+        "sourceUnit": 460,
         "src": "27:63:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -2784,10 +2784,10 @@
               "id": 18,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 472,
+              "referencedDeclaration": 459,
               "src": "286:7:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$472",
+                "typeIdentifier": "t_contract$_Ownable_$459",
                 "typeString": "contract Ownable"
               }
             },
@@ -2797,7 +2797,7 @@
           }
         ],
         "contractDependencies": [
-          472
+          459
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -2805,7 +2805,7 @@
         "id": 190,
         "linearizedBaseContracts": [
           190,
-          472
+          459
         ],
         "name": "ShoutRoom",
         "nodeType": "ContractDefinition",
@@ -3242,7 +3242,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 406,
+                  "referencedDeclaration": 393,
                   "src": "672:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3451,10 +3451,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        490,
-                        491
+                        477,
+                        478
                       ],
-                      "referencedDeclaration": 491,
+                      "referencedDeclaration": 478,
                       "src": "777:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3643,10 +3643,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        490,
-                        491
+                        477,
+                        478
                       ],
-                      "referencedDeclaration": 491,
+                      "referencedDeclaration": 478,
                       "src": "846:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3686,7 +3686,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 487,
+                              "referencedDeclaration": 474,
                               "src": "950:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -3790,10 +3790,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        490,
-                        491
+                        477,
+                        478
                       ],
-                      "referencedDeclaration": 491,
+                      "referencedDeclaration": 478,
                       "src": "916:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3833,7 +3833,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 487,
+                              "referencedDeclaration": 474,
                               "src": "1020:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -3969,7 +3969,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 487,
+                          "referencedDeclaration": 474,
                           "src": "1059:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -4201,7 +4201,7 @@
             "body": {
               "id": 188,
               "nodeType": "Block",
-              "src": "1268:359:0",
+              "src": "1268:358:0",
               "statements": [
                 {
                   "assignments": [
@@ -4701,7 +4701,7 @@
                                 "name": "abi",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 474,
+                                "referencedDeclaration": 461,
                                 "src": "1501:3:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_abi",
@@ -4900,7 +4900,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 129,
-                      "src": "1586:7:0",
+                      "src": "1585:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory_ptr",
                         "typeString": "string memory"
@@ -4918,7 +4918,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 137,
-                          "src": "1603:16:0",
+                          "src": "1602:16:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes_memory_ptr",
                             "typeString": "bytes memory"
@@ -4938,7 +4938,7 @@
                         "isPure": true,
                         "lValueRequested": false,
                         "nodeType": "ElementaryTypeNameExpression",
-                        "src": "1596:6:0",
+                        "src": "1595:6:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_type$_t_string_storage_ptr_$",
                           "typeString": "type(string storage pointer)"
@@ -4953,13 +4953,13 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "1596:24:0",
+                      "src": "1595:24:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_string_memory",
                         "typeString": "string memory"
                       }
                     },
-                    "src": "1586:34:0",
+                    "src": "1585:34:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_memory_ptr",
                       "typeString": "string memory"
@@ -4967,7 +4967,7 @@
                   },
                   "id": 187,
                   "nodeType": "ExpressionStatement",
-                  "src": "1586:34:0"
+                  "src": "1585:34:0"
                 }
               ]
             },
@@ -5056,17 +5056,17 @@
               "src": "1218:49:0"
             },
             "scope": 190,
-            "src": "1178:449:0",
+            "src": "1178:448:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
         "scope": 191,
-        "src": "264:1366:0"
+        "src": "264:1365:0"
       }
     ],
-    "src": "0:1631:0"
+    "src": "0:1630:0"
   },
   "compiler": {
     "name": "solc",
@@ -5074,5 +5074,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-12-11T11:26:29.919Z"
+  "updatedAt": "2018-12-12T04:38:10.577Z"
 }
