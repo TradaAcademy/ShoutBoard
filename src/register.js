@@ -4,14 +4,6 @@ import './style.css';
 
 var app = {
     instances: {},
-    templates: {},
-    data: {
-        shouts: {},
-    },
-    cache: {
-        blockTime: {},
-        avatar: {}
-    }
 }
 
 function init() {
@@ -45,6 +37,7 @@ function wireEvents() {
             alert("Please sign-in MetaMask.");
             return;
         }
+
         app.instances.userList.isAddrRegistered(account).then(function(registered){
             if (!registered) {
                 app.instances.userList.register(web3.fromAscii(text), false, {
@@ -58,6 +51,7 @@ function wireEvents() {
                 })
             } else {
                 alert("You already registed before. Update user name is not supported!");
+                window.location.href = "/";
             }
         });
 

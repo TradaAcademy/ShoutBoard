@@ -36,7 +36,7 @@ body {
     content: "\00b7";
     padding: 0 0.3rem;
 }
-#shoutText, #shoutBtn {
+.input, .btn {
     padding: 8px 12px;
 }
 
