@@ -29,7 +29,7 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
-        new HtmlWebpackPlugin({template: './src/register.html', inject: false}),
+        new HtmlWebpackPlugin({filename: 'register.html', template: './src/register.html', inject: false}),
         new HtmlWebpackPlugin({template: './src/index.html', inject: false})
     ]
 };
