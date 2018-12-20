@@ -1,6 +1,9 @@
 # Truffle builds
 build/
 
+# MacOS stuff
+.DS_Store
+
 # Logs
 logs
 *.log
