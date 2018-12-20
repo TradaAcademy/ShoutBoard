@@ -11,7 +11,7 @@
 2. Metamask > Import account using seed phase
 3. Paste Ganache's MNEMONIC into seed field, type any password
 4. Metamask > Settings > New Network: HTTP://127.0.0.1:7545
-5. Metamask > Change network to the new network at #5 (private network)
+5. Metamask > Change network to private network
 6. Metamask > Create 3 accounts (each should have 100 ETH) 
 
 ## Setup
