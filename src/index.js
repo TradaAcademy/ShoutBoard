@@ -49,7 +49,7 @@ function init() {
 
 function applyTemplate(template, data) {
     _.each(data, function (value, key) {
-        template = template.split("${" + key + "}").join(value);
+        template = template.split("#{" + key + "}").join(value);
     })
     return template;
 }
