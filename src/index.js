@@ -69,8 +69,8 @@ function processShout(item, callback) {
         when: function(next) {
             getTimestamp(item, next);
         },
-        username: function(next) {
-            getUsername(item, next);
+        user: function(next) {
+            getUser(item, next);
         }
     }, function(err, data){
         if (err) {
@@ -80,7 +80,8 @@ function processShout(item, callback) {
             when: data.when,
             ago: data.when.fromNow(),
             who: item.args.who,
-            username: data.username || formatAddr(item.args.who),
+            username: data.user.username || formatAddr(item.args.who),
+            avatarHash: data.user.avatarHash,
             what: item.args.what
         };
         callback(null, theItem);
@@ -99,13 +100,17 @@ function getTimestamp(item, callback) {
     });
 }
 
-function getUsername(item, callback) {
+function getUser(item, callback) {
     var cache = app.cache.usernames[item.args.who];
     if (cache) {
         return callback(null, cache);
     }
     app.instances.userList.getUserByAddr(item.args.who).then(function(value) {
-        callback(null, web3.toAscii(value[0]));
+        console.log("hehe", value);
+        callback(null, {
+            username: web3.toAscii(value[0]),
+            avatarHash: value[1]
+        });
     }).catch(function(err) {
         console.log(err);
         callback(err, null);

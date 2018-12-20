@@ -24,10 +24,13 @@
 
     <script id="shoutTemplate" type="text/template">
         <div class="card">
-            <div class="meta">
-                <span class="who">${username}</span> <span class="ago">${ago}</span>
+            <div class="avatar"><img src="https://gateway.ipfs.io/ipfs/${avatarHash}"></div>
+            <div class="content">
+                <div class="meta">
+                    <span class="who">${username}</span> <span class="ago">${ago}</span>
+                </div>
+                <div class="what">${what}</div>
             </div>
-            <div class="what">${what}</div>
         </div>
     </script>
     <script src='app.bundle.js'></script>

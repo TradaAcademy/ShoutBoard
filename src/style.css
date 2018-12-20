@@ -19,8 +19,8 @@ body {
 .card {
     border-bottom: 1px solid #ddd;
     margin: 0;
-    padding: 0.5rem 1rem;
     line-height: 1.6;
+    display: flex;
 }
 .meta {
     font-size: 85%;
@@ -39,5 +39,14 @@ body {
 .input, .btn {
     padding: 8px 12px;
 }
+#avatarImg {
+    height: 150px;
+}
 
+.avatar img {
+    height: 60px;
+}
+.content {
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+}
   

@@ -15,8 +15,13 @@
         <h3>Please register first.</h3>
         <br>
         <form id="registerForm">
-            <input id="userName" class="input" type="text" autofocus required placeholder="User name">
-            <button type="submit" class="btn">&nbsp;&nbsp;Register&nbsp;&nbsp;</button>
+            <label><small id="addressLabel">Please login MetaMask.</small></label><br><br>
+            <input id="userName" class="input" type="text" autofocus required placeholder="User name"><br><br>
+            <div>
+                <img id="avatarImg" dummy src="https://img.icons8.com/ios/50/000000/image.png">
+            </div>
+            <input type='file' id="avatarFile" accept="image/*"><br><br>
+            <button type="submit" class="btn" id="registerBtn" disabled>&nbsp;&nbsp;Register&nbsp;&nbsp;</button><br>
         </form>
         <br>
     </div>
