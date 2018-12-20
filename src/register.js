@@ -58,7 +58,7 @@ function init() {
 }
 
 function registerUser(account, username, avatarHash) {
-    app.instances.userList.register(web3.fromAscii(username), avatarHash, {
+    app.instances.userList.register(username, avatarHash, {
         from: account,
         gas: 1000000, // gas limit
         gasPrice: '15000000000' // 15 gwei
@@ -70,10 +70,15 @@ function registerUser(account, username, avatarHash) {
 }
 
 function submit(file, account, username) {
+    if (!file) {
+        registerUser(account, username, "");
+        return;
+    }
     var fileStream = fileReaderPullStream(file)
-    app.instances.ipfs.add(fileStream, { progress: (prog) => console.log(`received: ${prog}`) })
-      .then((response) => {
-        console.log(response)
+    app.instances.ipfs.add(fileStream, { 
+        pin: web3.version.network === "1", // only persist if mainnet
+        progress: (prog) => console.log(`IPFS upload progress: ${prog}`) 
+    }).then((response) => {
         registerUser(account, username, response[0].hash);
       }).catch((err) => {
         alert(err);
@@ -107,12 +112,16 @@ function wireEvents() {
             return;
         }
 
-        app.instances.userList.isAddrRegistered(account).then(function(registered){
-            if (!registered) {
+        var nickBytes = web3.fromAscii(text);
+
+        app.instances.userList.couldRegister(account, nickBytes).then(function(ok){
+            if (ok[0] && ok[1]) {
                 submit(document.getElementById("avatarFile").files[0], account, text)
-            } else {
+            } else if(!ok[0]) {
                 alert("You already registed before. Update user name is not supported!");
                 window.location.href = "/";
+            } else if(!ok[1]) {
+                alert("Username already taken. Choose another one.");
             }
         });
 

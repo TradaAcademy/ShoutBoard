@@ -19,6 +19,10 @@ contract UserList {
         return nickToAddr[_nick] != address(0);
     }
 
+    function couldRegister(address _who, bytes32 _nick) public view returns(bool, bool) {
+        return (!isAddrRegistered(_who), !isNickRegistered(_nick));
+    }
+
     function register(bytes32 _nick, string memory _avatarHash)    public {
         require(_nick != 0 && !isAddrRegistered(msg.sender) && !isNickRegistered(_nick), "Invalid argument");
         addrToUser[msg.sender] = User(_nick, _avatarHash);

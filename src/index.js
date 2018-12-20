@@ -64,6 +64,14 @@ function formatAddr(addr) {
     return addr.substr(0, 5) + "…" + addr.substr(-3);
 }
 
+function makeAvatarUrl(hash, account) {
+    if (hash) {
+        return "https://gateway.ipfs.io/ipfs/" + hash;
+    }
+
+    return "http://i.pravatar.cc/150?u=" + account;
+}
+
 function processShout(item, callback) {
     async.parallel({
         when: function(next) {
@@ -81,7 +89,7 @@ function processShout(item, callback) {
             ago: data.when.fromNow(),
             who: item.args.who,
             username: data.user.username || formatAddr(item.args.who),
-            avatarHash: data.user.avatarHash,
+            avatar: makeAvatarUrl(data.user.avatarHash, item.args.who),
             what: item.args.what
         };
         callback(null, theItem);
@@ -106,7 +114,6 @@ function getUser(item, callback) {
         return callback(null, cache);
     }
     app.instances.userList.getUserByAddr(item.args.who).then(function(value) {
-        console.log("hehe", value);
         callback(null, {
             username: web3.toAscii(value[0]),
             avatarHash: value[1]
