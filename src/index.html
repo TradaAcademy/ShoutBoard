@@ -6,13 +6,32 @@
     <title>ShoutBoard - Trada Academy</title>
     <style>
         body {background-color: #e6ecf0}
-        #wrapper { display: none }
+        .page { display: none }
     </style>
 </head>
 
 <body>
-    <div id="wrapper">
+    <section class="page" data-name="register">
+        <h3>Please register first.</h3>
+        <br>
+        <form id="registerForm">
+            <!--label><small id="addressLabel">Please login MetaMask.</small></label><br><br-->
+            <input id="userName" class="input" type="text" autofocus required placeholder="User name"><br><br>
+            <div>
+                <img id="avatarImg" dummy src="https://img.icons8.com/ios/50/000000/image.png">
+            </div>
+            <input type='file' id="avatarFile" accept="image/*"><br><br>
+            <button type="submit" class="btn" id="registerBtn">&nbsp;&nbsp;Register&nbsp;&nbsp;</button><br>
+        </form>
+        <br>
+    </section>
+
+    <section class="page show" data-name="index">
         <h3>Trada Academy Shout Board</h3>
+        <div>
+            <div><label><input type="radio" name="wallet" checked> Metamask</label> <code id="metamask"></code></div>
+            <div><label><input type="radio" name="wallet"> Private Key</label> <code id="prikey"></code></div>
+        </div>
         <br>
         <form id="shoutForm">
             <input id="shoutText" class="input" type="text" autofocus required placeholder="What to shout today?">
@@ -20,10 +39,10 @@
         </form>
         <br>
         <section class="board"></section>
-    </div>
+    </section>
 
-    <script id="shoutTemplate" type="text/template">
-        <div class="card">
+    <script data-template="shout_item" type="text/template">
+        <div class="card" data-tx="#{txHash}">
             <div class="avatar"><img src="#{avatar}"></div>
             <div class="content">
                 <div class="meta">

@@ -31,7 +31,7 @@ contract ShoutRoom is Ownable {
     function shout(string memory what) public {
         require(bytes(what).length != 0, "Content cannot be blank");
         require(address(userList) != address(0), "UserList not set");
-        require(userList.isAddrRegistered(msg.sender), "User not registered");
+        //require(userList.isAddrRegistered(msg.sender), "User not registered");
         shoutBoard.push(ShoutMsg(msg.sender, what));
         emit Shout(msg.sender, what);
     }

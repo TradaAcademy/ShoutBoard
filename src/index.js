@@ -1,14 +1,25 @@
-import _ from 'lodash';
 import async from 'async';
 import moment from 'moment';
-import 'truffle-contract';
 import shoutRoomJSON from '../build/contracts/ShoutRoom.json';
 import userListJSON from '../build/contracts/UserList.json';
+window._ = Web3.utils._;
+import Web3 from 'web3';
+import $h from './helper'
+window.$h = $h;
+import RegisterPage from './register';
 import './style.css';
 
-var app = {
+const NODE_URL = "HTTP://127.0.0.1:7545"; // change to Infura if you want
+
+window.app = {
+    account: "",
     instances: {},
     templates: {},
+    showPage: name => $h.page(app.pages[name]),
+    pages: {
+        register: RegisterPage,
+        index: "index"
+    },
     data: {
         shouts: {},
     },
@@ -18,79 +29,66 @@ var app = {
     }
 }
 
-function init() {
-
-    // Init contracts
-
-    var provider = (typeof web3 !== 'undefined') ? web3.currentProvider
-        : new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
-
-    var shoutContract = TruffleContract(shoutRoomJSON);
-    shoutContract.setProvider(provider);
-    shoutContract.deployed().then(function(instance) {
-        // save for later use
-        app.instances.shoutBoard = instance;
-
-        // load recent chat messages
-        loadOldShouts(instance);
-    });
-
-    var userContract = TruffleContract(userListJSON);
-    userContract.setProvider(provider);
-    userContract.deployed().then(function(instance) {
-        // save for later use
-        app.instances.userList = instance;
-    });
-
-    // Load templates
-    app.templates.shout_item = document.getElementById("shoutTemplate").textContent;
-
-}
-
-function applyTemplate(template, data) {
-    _.each(data, function (value, key) {
-        template = template.split("#{" + key + "}").join(value);
-    })
-    return template;
-}
-
-function createTag(html) {
-    var div = document.createElement('div');
-    div.innerHTML = html.trim();
-    return div.firstChild;
-}
-
-function formatAddr(addr) {
-    return addr.substr(0, 5) + "…" + addr.substr(-3);
-}
-
-function makeAvatarUrl(hash, account) {
-    if (hash) {
-        return "https://gateway.ipfs.io/ipfs/" + hash;
+async function selectMetamask() {
+    if (typeof web3 === 'undefined') {
+        document.getElementById("metamask").textContent = "Metamask not installed";
+        return;
     }
 
-    return "http://i.pravatar.cc/150?u=" + account;
+    // Ensure injected web3 is v1.0
+    window.web3 = new Web3(web3.currentProvider);
+
+    const accounts = await web3.eth.getAccounts();
+    let addr;
+    if (!accounts.length) {
+        addr = "Please log in Metamask";
+    } else {
+        addr = accounts[0];
+        app.account = addr;
+        initContracts();
+    }
+
+    document.getElementById("metamask").textContent = addr;
+}
+
+function selectPrikey() {
+    const key = prompt("Please input private key:");
+    const provider = new Web3.providers.WebsocketProvider("ws://127.0.0.1:7545");
+    window.web3 = new Web3(provider);
+
+    // set account from private key
+    const account = web3.eth.accounts.wallet.add('0x' + key);
+    app.account = account.address;
+    web3.eth.defaultAccount = app.account;
+
+    document.getElementById("prikey").textContent = account.address;
+
+    initContracts();
+}
+
+function initContracts() {
+    $h.contracts(app.instances, [shoutRoomJSON, userListJSON], app.account, loadOldShouts);
 }
 
 function processShout(item, callback) {
     async.parallel({
-        when: function(next) {
+        when: function (next) {
             getTimestamp(item, next);
         },
-        user: function(next) {
+        user: function (next) {
             getUser(item, next);
         }
-    }, function(err, data){
+    }, function (err, data) {
         if (err) {
             return callback(err, null);
         }
         var theItem = {
             when: data.when,
             ago: data.when.fromNow(),
-            who: item.args.who,
-            username: data.user.username || formatAddr(item.args.who),
-            avatar: makeAvatarUrl(data.user.avatarHash, item.args.who),
-            what: item.args.what
+            who: item.returnValues.who,
+            username: web3.utils.toUtf8(data.user.nick) || $h.formatAddr(item.returnValues.who),
+            avatar: $h.avatar(data.user.avatarHash, item.returnValues.who),
+            what: item.returnValues.what
         };
         callback(null, theItem);
     })
@@ -109,95 +107,103 @@ function getTimestamp(item, callback) {
 }
 
 function getUser(item, callback) {
-    var cache = app.cache.usernames[item.args.who];
+    var cache = app.cache.usernames[item.returnValues.who];
     if (cache) {
         return callback(null, cache);
     }
-    app.instances.userList.getUserByAddr(item.args.who).then(function(value) {
-        callback(null, {
-            username: web3.toAscii(value[0]),
-            avatarHash: value[1]
-        });
-    }).catch(function(err) {
-        console.log(err);
-        callback(err, null);
-    })
+    app.instances.UserList.methods.getUserByAddr(item.returnValues.who).call(callback);
 }
 
-function loadOldShouts(instance) {
-    instance.Shout({}, {fromBlock: 0 }).get(function (err, shouts) {
-        var funcs = {};
-        _.each(shouts, function (item) {
-            funcs[item.transactionHash] = function (next) {
-                processShout(item, next);
-            }
-        });
-        async.parallelLimit(funcs, 20, function (err, result) {
-            app.data.shouts = result;
+async function loadOldShouts() {
+    const instance = app.instances.ShoutRoom;
+    const shouts = await instance.getPastEvents("Shout", { fromBlock: 0 });
+    const funcs = {};
+    _.each(shouts, item => {
+        funcs[item.transactionHash] = function (next) {
+            processShout(item, next);
+        }
+    });
+    async.parallelLimit(funcs, 20, function (err, result) {
 
-            // need to sort to ensure display in order
-            var sortedArray = [];
-            _.each(result, function(item) {
-                sortedArray.push(item);
-            });
-            sortedArray = _.sortBy(sortedArray, ["when"]);
-            _.each(sortedArray, showShout);
+        if (err) {
+            alert(err);
+            console.log(err);
+            return;
+        }
 
-            // watch for new shout
-            instance.Shout().watch(function(err, item) {
-                if (app.data.shouts[item.transactionHash]) return;
-                processShout(item, function(err, theItem) {
-                    showShout(theItem);
-                })
+        app.data.shouts = result;
+
+        // need to sort to ensure display in order
+        let sortedArray = [];
+        _.each(result, item => sortedArray.push(item));
+        sortedArray = _.sortBy(sortedArray, ["when"]);
+        _.each(sortedArray, showShout);
+
+        // watch for new shout
+
+        instance.events.Shout().on("data", item => {
+            if (app.data.shouts[item.transactionHash]) return;
+            processShout(item, (err, theItem) => {
+                if (err) {
+                    alert(err);
+                    return;
+                }
+                showShout(theItem);
             })
         })
+
     })
 }
 
 function showShout(item) {
-    var node = createTag(applyTemplate(app.templates.shout_item, item));
-    var board = document.querySelector(".board");
+    const node = $h.tag($h.merge(app.templates.shout_item, item));
+    const board = document.querySelector(".board");
     board.insertBefore(node, board.firstChild);
 }
 
 function wireEvents() {
-    document.getElementById("shoutForm").addEventListener("submit", function(event){
+    document.getElementById("shoutForm").addEventListener("submit", async event => {
         event.preventDefault();
-        
+
         var text = document.getElementById("shoutText").value.trim();
         if (!text.length) {
             alert("Please input content before shouting!");
             return;
         }
 
-        var account = web3.eth.accounts[0];
+        var account = app.account;
         if (!account) {
             alert("Please sign-in MetaMask.");
             return;
         }
-        app.instances.userList.isAddrRegistered(account).then(function(registered){
-            if (!registered) {
-                window.location.href = "/register.html";
-                return;
-            } else {
-                app.instances.shoutBoard.shout(text, {
-                    from: account,
-                    gas: 100000, // gas limit
-                    gasPrice: '15000000000' // 15 gwei
-                }).catch(function(err){
-                    alert(err);
-                })
-            }
-        });
+        const registered = await app.instances.UserList.methods.isAddrRegistered(account).call();
+        if (!registered) {
+            app.showPage("register");
+            return;
+        } else {
+            app.instances.ShoutRoom.methods.shout(text).send({
+                from: account,
+                gas: 100000, // gas limit
+                gasPrice: '15000000000' // 15 gwei
+            }).on("transactionHash", function (hash) {
+                console.log(hash);
+            }).on("receipt", function (data) {
+                console.log(data);
+            }).on("error", function (err) {
+                alert(err);
+            })
+        }
 
     }, false)
 }
 
+function loadTemplates() {
+    app.templates = $h.loadTemplates();
+}
+
 (function start() {
-    if (web3.version.network === "1") {
-        alert("You are on MAINNET, please switch to a testnet then refresh page!");
-        return;
-    }
-    init();
+    loadTemplates();
     wireEvents();
+    selectMetamask();
+    //selectPrikey();
 })();

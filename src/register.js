@@ -1,14 +1,8 @@
-import 'truffle-contract';
-import userListJSON from '../build/contracts/UserList.json';
 import IpfsHttpClient from 'ipfs-http-client';
 import fileReaderPullStream from 'pull-file-reader';
-import './style.css';
+let pageInited = false;
 
-var app = {
-    account: "",
-    instances: {},
-}
-
+/*
 function changeInterface() {
     var img = document.getElementById("avatarImg");
     var lbl = document.getElementById("addressLabel");
@@ -27,59 +21,40 @@ function changeInterface() {
         img.src="http://i.pravatar.cc/150?u=" + app.account;
     }
 }
+*/
 
 function init() {
-
-    // Load account
-    app.account = web3.eth.accounts[0] || "";
-    // watch for metamask account change
-    setInterval(function() {
-        if (web3.eth.accounts[0] !== app.account) {
-            app.account = web3.eth.accounts[0];
-            changeInterface();
-        }
-    }, 100);
-
-    // load account, img, etc.
-    changeInterface();
-
-    // Init contracts
-    var provider = (typeof web3 !== 'undefined') ? web3.currentProvider
-        : new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
-
-    var userContract = TruffleContract(userListJSON);
-    userContract.setProvider(provider);
-    userContract.deployed().then(function(instance) {
-        // save for later use
-        app.instances.userList = instance;
-    });
-
-    app.instances.ipfs = IpfsHttpClient('ipfs.infura.io', '5001', {protocol: 'https'});
+    if (pageInited) return;
+    pageInited = true;
+    if (!app.instances.ipfs) {
+        app.instances.ipfs = IpfsHttpClient('ipfs.infura.io', '5001', {protocol: 'https'});
+    }
+    wireEvents();
 }
 
-function registerUser(account, username, avatarHash) {
-    app.instances.userList.register(username, avatarHash, {
-        from: account,
+function registerUser(username, avatarHash) {
+    app.instances.UserList.methods.register(username, avatarHash)
+    .send({
         gas: 1000000, // gas limit
         gasPrice: '15000000000' // 15 gwei
     }).then(function(){
-        window.location.href = "/";
+        app.showPage("index");
     }).catch(function(err){
         alert(err);
     })
 }
 
-function submit(file, account, username) {
+function submit(file, username) {
     if (!file) {
-        registerUser(account, username, "");
+        registerUser(username, "");
         return;
     }
     var fileStream = fileReaderPullStream(file)
     app.instances.ipfs.add(fileStream, { 
-        pin: web3.version.network === "1", // only persist if mainnet
+        pin: false,
         progress: (prog) => console.log(`IPFS upload progress: ${prog}`) 
     }).then((response) => {
-        registerUser(account, username, response[0].hash);
+        registerUser(username, response[0].hash);
       }).catch((err) => {
         alert(err);
         console.error(err);
@@ -106,20 +81,14 @@ function wireEvents() {
             return;
         }
 
-        var account = web3.eth.accounts[0];
-        if (!account) {
-            alert("Please sign-in MetaMask.");
-            return;
-        }
+        var nickBytes = web3.utils.fromAscii(text);
 
-        var nickBytes = web3.fromAscii(text);
-
-        app.instances.userList.couldRegister(account, nickBytes).then(function(ok){
+        app.instances.UserList.methods.couldRegister(app.account, nickBytes).call().then(function(ok){
             if (ok[0] && ok[1]) {
-                submit(document.getElementById("avatarFile").files[0], account, text)
+                submit(document.getElementById("avatarFile").files[0], nickBytes)
             } else if(!ok[0]) {
                 alert("You already registed before. Update user name is not supported!");
-                window.location.href = "/";
+                app.showPage("index");
             } else if(!ok[1]) {
                 alert("Username already taken. Choose another one.");
             }
@@ -128,11 +97,7 @@ function wireEvents() {
     }, false)
 }
 
-(function start() {
-    if (web3.version.network === "1") {
-        alert("You are on MAINNET, please switch to a testnet then refresh page!");
-        return;
-    }
-    init();
-    wireEvents();
-})();
+export default {
+    name: "register",
+    onInit: init
+}
