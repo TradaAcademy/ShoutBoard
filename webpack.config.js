@@ -6,6 +6,7 @@ module.exports = {
     mode: 'development',
     entry: {
         app: './src/index.js',
+        wallet: './src/wallet.js'
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -28,6 +29,7 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({filename: "wallet.html", template: './src/wallet.html', inject: false}),
         new HtmlWebpackPlugin({template: './src/index.html', inject: false})
     ]
 };

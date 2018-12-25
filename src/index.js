@@ -2,8 +2,8 @@ import async from 'async';
 import moment from 'moment';
 import shoutRoomJSON from '../build/contracts/ShoutRoom.json';
 import userListJSON from '../build/contracts/UserList.json';
-window._ = Web3.utils._;
 import Web3 from 'web3';
+window._ = Web3.utils._;
 import $h from './helper'
 window.$h = $h;
 import RegisterPage from './register';
