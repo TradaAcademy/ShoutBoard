@@ -1,7 +1,12 @@
 import bip39 from 'bip39';
+window.bip39 = bip39;
 import keythereum from './keythereum';
 import wallet from 'ethereumjs-wallet';
+window.wallet = wallet;
 import hdkey from 'ethereumjs-wallet/hdkey';
+window.hdkey = hdkey;
+import crypto from 'crypto-js';
+window.crypto = crypto;
 import Web3 from 'web3';
 
 if (web3) {
@@ -16,8 +21,10 @@ const $ = (selector, callback) => {
     }, false);
 }
 
-$("#createWeb3", e => {
-    alert("createWeb3");
+$("#createWeb3", async e => {
+    let account = await web3.eth.accounts.create();
+    console.log(account.privateKey);
+    alert(account.address);
 });
 
 $("#createKeythereum", e => {
@@ -25,7 +32,9 @@ $("#createKeythereum", e => {
 });
 
 $("#createEJS", e => {
-    alert("createEJS");
+    var newW = wallet.generate();
+    alert(newW.getAddressString());
+    alert(newW.getPrivateKey());
 });
 
 $("#importKeyWeb3", e => {
