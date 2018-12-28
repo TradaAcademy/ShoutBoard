@@ -26,6 +26,7 @@ function changeInterface() {
 function init() {
     if (pageInited) return;
     pageInited = true;
+    document.getElementById("avatarImg").src = "http://i.pravatar.cc/150?u=" + (app.account || "");
     if (!app.instances.ipfs) {
         app.instances.ipfs = IpfsHttpClient('ipfs.infura.io', '5001', {protocol: 'https'});
     }

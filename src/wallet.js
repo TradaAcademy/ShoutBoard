@@ -5,8 +5,8 @@ import wallet from 'ethereumjs-wallet';
 window.wallet = wallet;
 import hdkey from 'ethereumjs-wallet/hdkey';
 window.hdkey = hdkey;
-import crypto from 'crypto-js';
-window.crypto = crypto;
+import CryptoJS from 'crypto-js';
+window.CryptoJS = CryptoJS;
 import Web3 from 'web3';
 
 if (web3) {
