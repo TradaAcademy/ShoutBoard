@@ -28,7 +28,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(['dist']),
+        //new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({filename: "wallet.html", template: './src/wallet.html', inject: false}),
         new HtmlWebpackPlugin({template: './src/index.html', inject: false})
     ]

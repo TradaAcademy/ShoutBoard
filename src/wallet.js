@@ -1,6 +1,5 @@
 import bip39 from 'bip39';
 window.bip39 = bip39;
-import keythereum from './keythereum';
 import wallet from 'ethereumjs-wallet';
 window.wallet = wallet;
 import hdkey from 'ethereumjs-wallet/hdkey';
@@ -29,6 +28,14 @@ $("#createWeb3", async e => {
 
 $("#createKeythereum", e => {
     alert("createKeythereum");
+    var params = { keyBytes: 32, ivBytes: 16 };
+    // synchronous
+    var dk = keythereum.create(params);
+    console.log(dk);
+    alert(web3.utils.bytesToHex(dk.privateKey));
+    var account = web3.eth.accounts.privateKeyToAccount(dk.privateKey);
+    console.log(account);
+    alert(account.address);
 });
 
 $("#createEJS", e => {

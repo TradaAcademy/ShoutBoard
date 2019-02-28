@@ -204,6 +204,6 @@ function loadTemplates() {
 (function start() {
     loadTemplates();
     wireEvents();
-    selectMetamask();
-    //selectPrikey();
+    //selectMetamask();
+    selectPrikey();
 })();
